@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<HBox 
+    alignment="CENTER" 
+    id="BorderPane" 
+    prefHeight="200" 
+    prefWidth="220" 
+    xmlns:fx="http://javafx.com/fxml/1" 
+    fx:controller="org.mskcc.shenkers.annotator.FXMLController">  
+    <fx:define>
+        <ToggleGroup fx:id="status"/>
+    </fx:define>
+    <HBox alignment="CENTER" >
+        <VBox spacing="10"  alignment="CENTER_RIGHT">
+            <HBox alignment="CENTER_RIGHT">
+                <Label text="STATUS: X/Y"/>
+            </HBox>
+            <HBox alignment="CENTER_RIGHT">
+                <Label text="Source:"/>
+                <TextField fx:id="datasource" editable="false"  text="location" prefWidth="100" />
+            </HBox>
+            <HBox alignment="CENTER_RIGHT">
+                <Label text="User:"/>
+                <TextField fx:id="user" editable="false"  text="location" prefWidth="100"/>
+            </HBox>
+            <HBox alignment="CENTER">
+                <TextField fx:id="desc" editable="false"  text="location"/>
+            </HBox>
+            <HBox alignment="CENTER">
+                <VBox spacing="10"  alignment="CENTER_LEFT">
+                    <RadioButton fx:id="undecided" text="UNDECIDED" toggleGroup="$status"/>
+                    <RadioButton fx:id="true_pos" text="TRUE POSITIVE" toggleGroup="$status"/>
+                    <RadioButton fx:id="false_pos" text="FALSE POSITIVE" toggleGroup="$status"/>
+                </VBox>
+            </HBox>
+            <TextArea fx:id="notes" prefWidth="200" prefHeight="50"  />
+            <HBox alignment="CENTER_RIGHT"  spacing="5" >
+                <Button fx:id="prev" text="Previous" />
+                <Button fx:id="next" text="Next" />
+            </HBox>
+        </VBox> 
+        
+    </HBox>
+</HBox>
