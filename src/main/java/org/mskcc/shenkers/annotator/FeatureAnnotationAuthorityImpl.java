@@ -10,9 +10,9 @@ public class FeatureAnnotationAuthorityImpl implements FeatureAnnotationAuthorit
     int i = -1;
 
     FeatureAnnotation[] fas = new FeatureAnnotation[]{
-        new FeatureAnnotation("dummy_feature1", new Annotation("user1", Status.true_pos, "empty notes1")),
-        new FeatureAnnotation("dummy_feature2", new Annotation("user1", Status.false_pos, "empty notes2")),
-        new FeatureAnnotation("dummy_feature3", new Annotation("user1", Status.undecided, "empty notes3")),};
+        new FeatureAnnotation("dummy_feature1", new Annotation(null, "user1", Status.true_pos, "empty notes1")),
+        new FeatureAnnotation("dummy_feature2", new Annotation(null, "user1", Status.false_pos, "empty notes2")),
+        new FeatureAnnotation("dummy_feature3", new Annotation(null, "user1", Status.undecided, "empty notes3")),};
 
     @Override
     public FeatureAnnotation getNext() {

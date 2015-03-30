@@ -1,0 +1,24 @@
+<persistence xmlns="http://java.sun.com/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
+             version="2.0">
+    <persistence-unit name="annotations2">
+        <!--<provider>org.hibernate.ejb.HibernatePersistence</provider>org.hibernate.jpa.HibernatePersistenceProvider-->
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+        <class>org.mskcc.shenkers.annotator.Annotation</class>
+        <!--<class>org.mskcc.shenkers.annotator.GRange</class>-->
+        <properties>
+<!--            <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema" />
+            <property name="openjpa.ConnectionURL" value="jdbc:derby://localhost:1234/annotations;create=true" />
+            <property name="openjpa.ConnectionDriverName" value="org.apache.derby.jdbc.ClientDriver" />-->
+            <!--<property name="javax.persistence.jdbc.url" value="jdbc:derby://localhost:1234/annotations;create=true" />-->
+            <property name="javax.persistence.jdbc.user" value="APP"/>
+            <property name="javax.persistence.jdbc.password" value="APP"/>
+            <property name="hibernate.connection.url" value="jdbc:derby://localhost:1234/annotations;create=true" />
+            <property name="hibernate.dialect" value="org.hibernate.dialect.DerbyDialect"/>
+            <!--<property name="hibernate.hbm2ddl.auto" value="create-drop"/>-->
+            <!--<property name="hibernate.hbm2ddl.auto" value="create"/>-->
+            <property name="hibernate.hbm2ddl.auto" value="update"/>
+        </properties>
+    </persistence-unit>
+</persistence>

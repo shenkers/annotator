@@ -5,23 +5,52 @@
  */
 package org.mskcc.shenkers.annotator;
 
+import javax.persistence.Basic;
+import javax.persistence.EmbeddedId;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.OneToOne;
+
 /**
  *
  * @author sol
  */
+@Entity
 public class Annotation {
-    private String user;
+//    @Id
+//    @GeneratedValue(strategy = GenerationType.AUTO)
+//	private long id;
+    
+    
     private Status status;
     private String notes;
+    
+    @EmbeddedId
+            private AnnotationId id;
 
     public Annotation() {
     }
 
-    public Annotation(String user, Status status, String notes) {
-        this.user = user;
+    public Annotation(AnnotationId id, String user, Status status, String notes) {
         this.status = status;
         this.notes = notes;
+        this.id = id;
     }
+    
+//    @EmbeddedId
+//    public AnnotationId getPrimaryKey(){
+//        AnnotationId id = new AnnotationId();
+//        id.setUser(username);
+//        id.setUser(source);
+//        id.setChr(chr);
+//        id.setS(s);
+//        id.setE(e);
+//        id.setNeg(neg);
+//        return id;
+//    }
 
     /**
      * @return the status
@@ -52,16 +81,17 @@ public class Annotation {
     }
 
     /**
-     * @return the user
+     * @return the id
      */
-    public String getUser() {
-        return user;
+    public AnnotationId getId() {
+        return id;
     }
 
     /**
-     * @param user the user to set
+     * @param id the id to set
      */
-    public void setUser(String user) {
-        this.user = user;
+    public void setId(AnnotationId id) {
+        this.id = id;
     }
+
 }

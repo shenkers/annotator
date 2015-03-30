@@ -1,5 +1,7 @@
 package org.mskcc.shenkers.annotator;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import java.util.ResourceBundle;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
@@ -8,23 +10,44 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-
 public class MainApp extends Application {
 
+//    @Override
+//    public void start(Stage stage) throws Exception {
+//        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/Scene.fxml"));
+//        
+//        Parent root = fxmlLoader.load();
+//        FXMLController controller = fxmlLoader.<FXMLController>getController();
+//        
+//        controller.getUserProperty().setValue("user-sol");
+//        controller.getDatasourceProperty().setValue("dataset-1");
+//        
+//        Scene scene = new Scene(root);
+//        scene.getStylesheets().add("/styles/Styles.css");
+//        
+//        stage.setTitle("Annotator");
+//        stage.setScene(scene);
+//        stage.show();
+//    }
+    /*
+     Injector inj = Guice.createInjector(new TrackConfiguration(), new AlignmentConfiguration(), new CoordinateChangeModule(), new ServerModule());
+     FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Scene.fxml"));
+     loader.setControllerFactory((Class<?> type) -> {
+     return inj.getInstance(type);
+     });
+
+     */
     @Override
     public void start(Stage stage) throws Exception {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/Scene.fxml"));
         
+        
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/DatasetSelecter.fxml"));
+
         Parent root = fxmlLoader.load();
-        FXMLController controller = fxmlLoader.<FXMLController>getController();
-        
-        controller.getUserProperty().setValue("user-sol");
-        controller.getDatasourceProperty().setValue("dataset-1");
-        
+
         Scene scene = new Scene(root);
-        scene.getStylesheets().add("/styles/Styles.css");
-        
-        stage.setTitle("Annotator");
+
+        stage.setTitle("Select dataset");
         stage.setScene(scene);
         stage.show();
     }

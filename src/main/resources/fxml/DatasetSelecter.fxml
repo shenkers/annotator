@@ -8,12 +8,28 @@
 <?import javafx.scene.layout.*?>
 
 <VBox id="AnchorPane" 
-      prefHeight="400.0" prefWidth="600.0" 
+      prefHeight="400.0" prefWidth="250.0" 
       styleClass="mainFxmlClass" xmlns:fx="http://javafx.com/fxml/1" 
-      fx:controller="org.mskcc.shenkers.annotator.DatasetSelecterController">
-    <Button text="Select User"/>
-    <Button text="Select Dataset"/>
-    <Button text="Add User"/>
+      fx:controller="org.mskcc.shenkers.annotator.DatasetSelecterController"
+      spacing="15"
+      alignment="CENTER"
+      fillWidth="false" 
+>
+    <HBox spacing="15">
+    <Button fx:id="selectUser" onAction="#userSelected"  text="Select User"/>
+    <Label fx:id="selectedUser" text="unselected" />
+    </HBox>
+    <ListView fx:id="users" />
+    <HBox spacing="15">
+    <Button fx:id="selectSource" onAction="#sourceSelected" text="Select Source"/>
+    <Label fx:id="selectedSource" text="unselected" />
+    </HBox>
+    <ListView fx:id="sources" />
+    <HBox spacing="15">
+    <Button fx:id="addUser" onAction="#userAdded" text="Add User"/>
+    <TextField fx:id="newUser" prefWidth="100" />
+    </HBox>
+    <Button fx:id="annotate" onAction="#startAnnotation" text="Review dataset"/>
     <stylesheets>
         <URL value="@/styles/datasetselecter.css"/>
     </stylesheets>
