@@ -2,6 +2,8 @@ package org.mskcc.shenkers.annotator;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.google.inject.Key;
+import com.google.inject.name.Names;
 import java.util.ResourceBundle;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
@@ -9,6 +11,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javax.persistence.Entity;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 
 public class MainApp extends Application {
 
@@ -39,9 +44,12 @@ public class MainApp extends Application {
      */
     @Override
     public void start(Stage stage) throws Exception {
-        
-        
+        Injector inj = Guice.createInjector(new PersistenceModule());
+
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/DatasetSelecter.fxml"));
+        fxmlLoader.setControllerFactory((Class<?> type) -> {
+            return inj.getInstance(type);
+        });
 
         Parent root = fxmlLoader.load();
 
@@ -50,6 +58,15 @@ public class MainApp extends Application {
         stage.setTitle("Select dataset");
         stage.setScene(scene);
         stage.show();
+        
+        //configure the entity manager to close the connection when the application is closed
+        stage.setOnCloseRequest(e -> {
+            System.out.println("closing entity manager...");
+            EntityManagerFactory emf = inj.getInstance(EntityManagerFactory.class);
+            System.out.println("got instance: " + emf);
+            emf.close();
+            System.out.println("closed");
+        });
     }
 
     /**

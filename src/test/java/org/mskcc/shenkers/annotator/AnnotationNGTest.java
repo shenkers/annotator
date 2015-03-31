@@ -50,24 +50,20 @@ public class AnnotationNGTest {
     /**
      * Test of getPrimaryKey method, of class Annotation.
      */
-    @Test
+//    @Test
     public void testGetPrimaryKey2() {
         String annotations = "annotations2";
         EntityManager annotationEntityManager = Persistence.createEntityManagerFactory(annotations).createEntityManager();
-        AnnotationId id = new AnnotationId();
-        id.setUsername("sol");
-        id.setSource("abc");
-        id.setChr("X");
-        id.setS(2);
-        id.setE(2);
-        id.setNeg(false);
         
-        Annotation a = new Annotation(id,"sol", Status.false_pos, "does it work?");
+        GRange range = new GRange("X",1,2,false);
+        Annotation a = new Annotation(range, "source1","sol", Status.false_pos, "does it work?");
         
         EntityTransaction transaction = annotationEntityManager.getTransaction();
         transaction.begin();
-        annotationEntityManager.persist(a);
+//        annotationEntityManager.persist(a);
+        annotationEntityManager.merge(a);
         transaction.commit();
+        
 //        new StandardServiceRegistryBuilder().applySetting(configuration.getProperties()).
 //       String annotations = "annotations";
 //         String userHomeDir = System.getProperty("user.home", ".");
@@ -81,7 +77,7 @@ public class AnnotationNGTest {
 
     }
     
-     @Test
+//     @Test
     public void testGetPrimaryKey() {
         String annotations = "annotations2";
         EntityManager annotationEntityManager = Persistence.createEntityManagerFactory(annotations).createEntityManager();

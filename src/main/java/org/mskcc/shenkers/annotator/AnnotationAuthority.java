@@ -9,10 +9,10 @@ package org.mskcc.shenkers.annotator;
  *
  * @author sol
  */
-public interface FeatureAnnotationAuthority {
-    public FeatureAnnotation getNext();
+public interface AnnotationAuthority {
+    public Annotation getNext();
     
-    public FeatureAnnotation getPrev();
+    public Annotation getPrev();
     
     void update(Annotation annotation);
 }

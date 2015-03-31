@@ -29,7 +29,7 @@ import javafx.scene.control.ToggleGroup;
  */
 public class FXMLController implements Initializable {
 
-    FeatureAnnotationAuthority featureAuthority = new FeatureAnnotationAuthorityImpl();
+    AnnotationAuthority featureAuthority = new AnnotationAuthorityImpl();
 
     final Property<Annotation> aProperty = new SimpleObjectProperty<>();
 
@@ -80,10 +80,12 @@ public class FXMLController implements Initializable {
         false_pos.setUserData(Status.false_pos);
         undecided.setUserData(Status.undecided);
 
-        FeatureAnnotation nxt = featureAuthority.getNext();
-        aProperty.setValue(nxt.getAnnotation());
-        syncAnnotationControls(nxt.getAnnotation());
-        desc.setText(nxt.getFeatureDesc());
+        {
+            Annotation nxt = featureAuthority.getNext();
+            aProperty.setValue(nxt);
+            syncAnnotationControls(nxt);
+            desc.setText(nxt.getGRange().toString());
+        }
 
         next.setOnAction(e -> {
             // persist the current feature
@@ -92,10 +94,10 @@ public class FXMLController implements Initializable {
             a.setNotes(notes.getText());
             featureAuthority.update(a);
             // request the next
-            FeatureAnnotation fa = featureAuthority.getNext();
-            aProperty.setValue(fa.getAnnotation());
-            syncAnnotationControls(fa.getAnnotation());
-            desc.setText(fa.getFeatureDesc());
+            Annotation nxt = featureAuthority.getNext();
+            aProperty.setValue(nxt);
+            syncAnnotationControls(nxt);
+            desc.setText(nxt.getGRange().toString());
         });
 
         prev.setOnAction(e -> {
@@ -104,11 +106,11 @@ public class FXMLController implements Initializable {
             a.setStatus((Status) status.getSelectedToggle().getUserData());
             a.setNotes(notes.getText());
             featureAuthority.update(a);
-            // request the next
-            FeatureAnnotation fa = featureAuthority.getPrev();
-            aProperty.setValue(fa.getAnnotation());
-            syncAnnotationControls(fa.getAnnotation());
-            desc.setText(fa.getFeatureDesc());
+            // request the previous
+            Annotation nxt = featureAuthority.getNext();
+            aProperty.setValue(nxt);
+            syncAnnotationControls(nxt);
+            desc.setText(nxt.getGRange().toString());
         });
     }
 

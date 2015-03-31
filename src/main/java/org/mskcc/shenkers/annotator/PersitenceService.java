@@ -20,17 +20,26 @@ import javax.persistence.criteria.Root;
 public class PersitenceService {
 
 
-    EntityManager userEntityManager, sourceEntityManager, annotationEntityManager;
+    EntityManager 
+//            userEntityManager, sourceEntityManager, 
+            annotationEntityManager;
 
-    @Inject
-    public void setEntityManagers(
-            @Named("users") EntityManager userEntityManager,
-            @Named("sources") EntityManager sourceEntityManager,
-            @Named("annotations") EntityManager annotationEntityManager
+//    @Inject
+//    public void setEntityManagers(
+//            @Named("users") EntityManager userEntityManager,
+//            @Named("sources") EntityManager sourceEntityManager,
+//            @Named("annotations") EntityManager annotationEntityManager
+//    ) {
+//        this.userEntityManager = userEntityManager;
+//        this.sourceEntityManager = sourceEntityManager;
+//        this.annotationEntityManager = annotationEntityManager;
+//    }
+    
+     @Inject
+    public void setEntityManager(
+              @Named("annotations") EntityManager annotationEntityManager
     ) {
-        this.userEntityManager = userEntityManager;
-        this.sourceEntityManager = sourceEntityManager;
-        this.annotationEntityManager = annotationEntityManager;
+         this.annotationEntityManager = annotationEntityManager;
     }
 
     public void persist(Annotation a) {

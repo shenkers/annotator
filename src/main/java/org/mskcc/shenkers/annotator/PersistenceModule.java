@@ -33,10 +33,12 @@ public class PersistenceModule extends AbstractModule {
         System.setProperty("derby.system.home", systemDir);
 //        EntityManager userEntityManager = Persistence.createEntityManagerFactory(users).createEntityManager();
 //        EntityManager sourceEntityManager = Persistence.createEntityManagerFactory(sources).createEntityManager();
-        EntityManager annotationEntityManager = Persistence.createEntityManagerFactory(annotations).createEntityManager();
+         EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory(annotations);
+        EntityManager annotationEntityManager = entityManagerFactory.createEntityManager();
 //        bind(EntityManager.class).annotatedWith(Names.named(users)).toInstance(userEntityManager);
 //        bind(EntityManager.class).annotatedWith(Names.named(sources)).toInstance(sourceEntityManager);
         bind(EntityManager.class).annotatedWith(Names.named(annotations)).toInstance(annotationEntityManager);
+        bind(EntityManagerFactory.class).toInstance(entityManagerFactory);
     }
     
     

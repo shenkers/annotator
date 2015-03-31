@@ -135,7 +135,7 @@ public class DatasetSelecterController implements Initializable {
         
         Set<String> sourceSet = annotations
                 .stream()
-                .map(a -> a.getId().getUsername())
+                .map(a -> a.getId().getSource())
                 .collect(Collectors.toSet());
         
         // set the gui based on these

@@ -36,14 +36,14 @@ public class GRange {
     /**
      * @return the ref
      */
-    public String getRef() {
+    public String getChr() {
         return ref;
     }
 
     /**
      * @param ref the ref to set
      */
-    public void setRef(String ref) {
+    public void setChr(String ref) {
         this.ref = ref;
     }
 
@@ -91,7 +91,7 @@ public class GRange {
 
     @Override
     public int hashCode() {
-        return getRef().hashCode() + getS() + getE() + (isNeg() ? 0 : 1);
+        return getChr().hashCode() + getS() + getE() + (isNeg() ? 0 : 1);
     }
 
     @Override
@@ -106,6 +106,6 @@ public class GRange {
             return false;
         }
         GRange other = (GRange) obj;
-        return other.getRef().equals(getRef()) && other.getS() == getS() && other.getE() == getE() && other.isNeg() == isNeg();
+        return other.getChr().equals(getChr()) && other.getS() == getS() && other.getE() == getE() && other.isNeg() == isNeg();
     }
 }

@@ -34,11 +34,16 @@ public class Annotation {
     public Annotation() {
     }
 
-    public Annotation(AnnotationId id, String user, Status status, String notes) {
+    public Annotation(GRange gRange, String source, String username, Status status, String notes) {
         this.status = status;
         this.notes = notes;
-        this.id = id;
+        this.id = new AnnotationId();
+        setGRange(gRange);
+        id.setSource(source);
+        id.setUsername(username);
     }
+    
+    
     
 //    @EmbeddedId
 //    public AnnotationId getPrimaryKey(){
@@ -92,6 +97,17 @@ public class Annotation {
      */
     public void setId(AnnotationId id) {
         this.id = id;
+    }
+    
+    public GRange getGRange(){
+        return new GRange(id.getChr(),id.getS(),id.getE(),id.isNeg());
+    }
+    
+    public void setGRange(GRange gRange){
+        id.setChr(gRange.getChr());
+        id.setS(gRange.getS());
+        id.setE(gRange.getE());
+        id.setNeg(gRange.isNeg());
     }
 
 }
