@@ -37,6 +37,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import org.apache.commons.validator.routines.UrlValidator;
 
 /**
  * FXML Controller class
@@ -44,30 +45,31 @@ import javafx.stage.Stage;
  * @author sol
  */
 public class DatasetSelecterController implements Initializable {
-
-    Property<Optional<String>> user = new SimpleObjectProperty(Optional.empty());
-    Property<Optional<String>> source = new SimpleObjectProperty(Optional.empty());
-
-    @Inject
+    
+    Property<Optional<String>> user, source;
+    
+     
     PersistenceService persistenceService;
-
+    
+    FXMLLoader rootLoader;
+    
     @FXML
     Button addUser, annotate;
     
     @FXML
     Label selectSource, selectUser;
-
+    
     @FXML
     TextField selectedUser, selectedSource;
-
+    
     @FXML
     ListView<String> sources, users;
-
+    
     @FXML
     TextField newUser;
-
+    
     BooleanBinding canAnnotate;
-
+    
     @FXML
     public void userAdded(ActionEvent e) {
         Optional.ofNullable(newUser.getText()).ifPresent((userName) -> {
@@ -80,7 +82,7 @@ public class DatasetSelecterController implements Initializable {
         }
         );
     }
-
+    
     @FXML
     public void userSelected(ActionEvent e) {
         Optional.ofNullable(users.getSelectionModel().getSelectedItem())
@@ -88,12 +90,12 @@ public class DatasetSelecterController implements Initializable {
                     userSelected(userName);
                 });
     }
-
+    
     public void userSelected(String userName) {
         user.setValue(Optional.of(userName));
         selectedUser.setText(userName);
     }
-
+    
     @FXML
     public void sourceSelected(ActionEvent e) {
         Optional.ofNullable(sources.getSelectionModel().getSelectedItem())
@@ -107,30 +109,42 @@ public class DatasetSelecterController implements Initializable {
         source.setValue(Optional.of(sourceName));
         selectedSource.setText(sourceName);
     }
-
+    
+    @Inject
+    public void setLoader(FXMLLoader loader) {
+        this.rootLoader = loader;
+    }
+    
+    @Inject
+    public void setSharedProperties(SharedProperties properties){
+        this.user = properties.getUserProperty();
+        this.source = properties.getSourceProperty();
+    }
+    @Inject
+    public void setPersistenceService(PersistenceService persistenceService){
+        this.persistenceService = persistenceService;
+    }
+    
     @FXML
     public void startAnnotation(ActionEvent e) throws IOException {
         System.out.println("starting annotation");
-
+        
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/Scene.fxml"));
-      
+        fxmlLoader.setControllerFactory(rootLoader.getControllerFactory());
+        
         Parent root = fxmlLoader.load();
         FXMLController controller = fxmlLoader.<FXMLController>getController();
-
-        controller.getUserProperty().setValue(user.getValue().get());
-        controller.getDatasourceProperty().setValue(source.getValue().get());
-        controller.getLoci().addAll(persistenceService.querySourceLoci(source.getValue().get()));
-        controller.setAnnotationAuthority(persistenceService);
-        controller.initializeGui();
-
+        
         Scene scene = new Scene(root);
         scene.getStylesheets().add("/styles/Styles.css");
-
+        
         Stage stage = new Stage();
         stage.setTitle("Annotator");
         stage.setScene(scene);
         // save the current state when the editor is closed
-        stage.setOnCloseRequest(evt -> {controller.persistCurrentState();});
+        stage.setOnCloseRequest(evt -> {
+            controller.persistCurrentState();
+        });
         stage.show();
     }
 
@@ -142,11 +156,15 @@ public class DatasetSelecterController implements Initializable {
         // TODO load datasets and users from database
 
         canAnnotate = Bindings.createBooleanBinding(() -> {
-            return !(user.getValue().isPresent() && source.getValue().isPresent());
+            UrlValidator uri = UrlValidator.getInstance();
+            
+            return !(user.getValue().isPresent() 
+                    && source.getValue().isPresent()
+                    );
         }, user, source);
-
+        
         annotate.disableProperty().bind(canAnnotate);
-
+        
         users.getSelectionModel().selectedItemProperty().addListener(
                 (ob, o, userName) -> {
                     userSelected(userName);
@@ -158,7 +176,7 @@ public class DatasetSelecterController implements Initializable {
                 });
         // read annotations from the database
         List<Locus> annotations = persistenceService.queryLoci();
-
+        
         Set<String> userSet = annotations
                 .stream()
                 .flatMap(l
@@ -167,7 +185,7 @@ public class DatasetSelecterController implements Initializable {
                                         l.getAnnotations(), 0), false))
                 .map(a -> a.getUsername())
                 .collect(Collectors.toSet());
-
+        
         Set<String> sourceSet = annotations
                 .stream()
                 .map(a -> a.getSource())
@@ -177,5 +195,5 @@ public class DatasetSelecterController implements Initializable {
         this.users.getItems().setAll(userSet);
         this.sources.getItems().setAll(sourceSet);
     }
-
+    
 }

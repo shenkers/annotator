@@ -42,6 +42,13 @@ public class Locus {
         annotations = new HashSet<>();
     }
 
+    @Override
+    public String toString() {
+        return String.format("'%s' : '%s'", id.getSource(), getGRange());
+    }
+    
+    
+
     /**
      * @return the id
      */

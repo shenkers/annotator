@@ -15,7 +15,7 @@
             <!--<property name="javax.persistence.jdbc.url" value="jdbc:derby://localhost:1234/annotations;create=true" />-->
             <property name="javax.persistence.jdbc.user" value="APP"/>
             <property name="javax.persistence.jdbc.password" value="APP"/>
-            <property name="hibernate.connection.url" value="jdbc:derby://localhost:1234/loci;create=true" />
+            <property name="javax.persistence.jdbc.url" value="jdbc:derby://iski0004.mskcc.org:1234/loci;create=true" />
             <property name="hibernate.dialect" value="org.hibernate.dialect.DerbyTenSevenDialect"/>
             <!--<property name="hibernate.hbm2ddl.auto" value="create-drop"/>-->
             <!--<property name="hibernate.hbm2ddl.auto" value="create"/>-->

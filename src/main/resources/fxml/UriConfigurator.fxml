@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<HBox id="AnchorPane" 
+      prefHeight="150." prefWidth="600.0" 
+      styleClass="mainFxmlClass" xmlns:fx="http://javafx.com/fxml/1" 
+      fx:controller="org.mskcc.shenkers.annotator.UriConfiguratorController"
+      spacing="15"
+      alignment="CENTER"
+      fillHeight="false" 
+>
+    <VBox alignment="CENTER" spacing="15">
+        <HBox spacing="15" alignment="BOTTOM_RIGHT">
+            <Label text="Database URI:"/>
+            <TextField prefWidth="300"  fx:id="databaseUri" text="http://iski0004.mskcc.org:1234" />
+        </HBox>
+        <HBox spacing="15" alignment="BOTTOM_RIGHT">
+            <Label text="Browser URI:"/>
+            <TextField prefWidth="300"  fx:id="browserUri" text="http://localhost:12345" />
+        </HBox>
+        <HBox alignment="BOTTOM_RIGHT" >
+            <Button  fx:id="connect" onAction="#connect" text="Connect"/>
+        </HBox>
+    </VBox>
+    <stylesheets>
+        <URL value="@/styles/uriconfigurator.css"/>
+    </stylesheets>
+</HBox>

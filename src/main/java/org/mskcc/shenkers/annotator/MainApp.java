@@ -4,9 +4,12 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.name.Names;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
+import javafx.application.Platform;
+import javafx.beans.property.Property;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -17,6 +20,7 @@ import javax.persistence.EntityManagerFactory;
 
 public class MainApp extends Application {
 
+    Injector inj;
 //    @Override
 //    public void start(Stage stage) throws Exception {
 //        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/Scene.fxml"));
@@ -42,11 +46,17 @@ public class MainApp extends Application {
      });
 
      */
+
     @Override
     public void start(Stage stage) throws Exception {
-        Injector inj = Guice.createInjector(new PersistenceModule());
+        inj = Guice.createInjector(
+                new PersistenceModule(),
+                new FXModule(),
+                new PropertyModule());
 
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/DatasetSelecter.fxml"));
+        FXMLLoader fxmlLoader = inj.getInstance(FXMLLoader.class);
+        fxmlLoader.setLocation(getClass().getResource("/fxml/UriConfigurator.fxml"));
+
         fxmlLoader.setControllerFactory((Class<?> type) -> {
             return inj.getInstance(type);
         });
@@ -55,18 +65,10 @@ public class MainApp extends Application {
 
         Scene scene = new Scene(root);
 
-        stage.setTitle("Select dataset");
+        stage.setTitle("Connect to annotation server");
         stage.setScene(scene);
         stage.show();
-        
-        //configure the entity manager to close the connection when the application is closed
-        stage.setOnCloseRequest(e -> {
-            System.out.println("closing entity manager...");
-            EntityManagerFactory emf = inj.getInstance(EntityManagerFactory.class);
-            System.out.println("got instance: " + emf);
-            emf.close();
-            System.out.println("factory is open? "+emf.isOpen());
-        });
+
     }
 
     /**
@@ -79,6 +81,18 @@ public class MainApp extends Application {
      */
     public static void main(String[] args) {
         launch(args);
+    }
+
+    @Override
+    public void stop() throws Exception {
+        super.stop(); //To change body of generated methods, choose Tools | Templates.
+
+        //close the database connection when the application exits
+        System.out.println("closing entity manager...");
+        PersistenceProperties emf = inj.getInstance(PersistenceProperties.class);
+        System.out.println("got instance: " + emf);
+        Property<EntityManagerFactory> emfProperty = emf.getEmfProperty();
+        Optional.ofNullable(emfProperty.getValue()).ifPresent(f -> f.close());
     }
 
 }

@@ -42,15 +42,22 @@ import javax.ws.rs.core.Response;
  */
 public class FXMLController implements Initializable {
 
-    PersistenceService ps;
+    PersistenceService persistenceService;
+    
+    BrowserApi browserApi = new BrowserApi();
+
+    Property<Optional<String>> userProperty;
+    Property<Optional<String>> sourceProperty;
+    
+    Property<String> browserUriProperty;
 
     ObservableList<Locus> loci = FXCollections.observableArrayList();
 
     final Property<Locus> lProperty = new SimpleObjectProperty<>();
     final Property<Annotation> aProperty = new SimpleObjectProperty<>();
 
-    private StringProperty datasourceProperty = new SimpleStringProperty();
-    private StringProperty userProperty = new SimpleStringProperty();
+    private StringBinding sourceBinding;
+    private StringBinding userBinding;
 
     @FXML
     Label progress;
@@ -78,8 +85,16 @@ public class FXMLController implements Initializable {
 //        label.setText("Hello World!");
 //    }
 
+    @Inject
+    public void setSharedState(SharedProperties properties) {
+        userProperty = properties.getUserProperty();
+        sourceProperty = properties.getSourceProperty();
+        browserUriProperty = properties.getBrowserUriProperty();
+    }
+
+    @Inject
     public void setAnnotationAuthority(PersistenceService ps) {
-        this.ps = ps;
+        this.persistenceService = ps;
     }
 
     public void syncAnnotationControls(Annotation a) {
@@ -102,10 +117,10 @@ public class FXMLController implements Initializable {
             int decided = loci.stream()
                     .map(l -> l.getAnnotations()
                             .stream()
-                            .filter( a -> 
-                                    a.getUsername().equals(userProperty.get()))
-                            .filter(a -> 
-                                    a.getStatus() == Status.true_pos
+                            .filter(a
+                                    -> a.getUsername().equals(userBinding.get()))
+                            .filter(a
+                                    -> a.getStatus() == Status.true_pos
                                     || a.getStatus() == Status.false_pos
                             )
                             .mapToInt(a -> 1)
@@ -116,8 +131,17 @@ public class FXMLController implements Initializable {
         }, loci, index, userProperty);
         progress.textProperty().bind(progressBinding);
 
-        user.textProperty().bind(getUserProperty());
-        datasource.textProperty().bind(getDatasourceProperty());
+        userBinding = Bindings.createStringBinding(
+                () -> String.format("%s",
+                        userProperty.getValue()
+                        .orElse("ERROR")), userProperty);
+        sourceBinding = Bindings.createStringBinding(
+                () -> String.format("%s",
+                        sourceProperty.getValue()
+                        .orElse("ERROR")), sourceProperty);
+
+        user.textProperty().bind(userBinding);
+        datasource.textProperty().bind(sourceBinding);
 
         true_pos.setUserData(Status.true_pos);
         false_pos.setUserData(Status.false_pos);
@@ -140,6 +164,10 @@ public class FXMLController implements Initializable {
             updateCurrentState(nxt);
             updateBrowser(nxt);
         });
+       
+        loci.addAll(persistenceService.querySourceLoci(sourceBinding.getValue()));
+
+        initializeGui();
     }
 
     public Locus getNext() {
@@ -163,58 +191,31 @@ public class FXMLController implements Initializable {
         a.setStatus((Status) status.getSelectedToggle().getUserData());
         a.setNotes(notes.getText());
         Locus l = lProperty.getValue();
-        ps.persist(l);
+        persistenceService.persist(l);
     }
 
     public void updateBrowser(Locus nxt) {
-        System.out.println("building request");
-        WebTarget target = ClientBuilder.newClient().target("http://localhost:12345").path("setCoordinates")
-                .queryParam("chr", nxt.getGRange().getChr())
-                .queryParam("start", nxt.getGRange().getS())
-                .queryParam("end", nxt.getGRange().getE());
-        System.out.println("URI: " + target.getUri().toString());
-        try {
-            Response get = target.request().get();
-            System.out.println("Response: " + get.getStatusInfo());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        String uri = browserUriProperty.getValue();
+        browserApi.setCoordinates(uri, nxt.getGRange().getChr(), nxt.getGRange().getS(), nxt.getGRange().getE());
+        browserApi.addIntervalNamedTrack(uri, sourceBinding.get(), nxt.getGRange().getChr(), nxt.getGRange().getS(), nxt.getGRange().getE());
     }
 
     public void updateCurrentState(Locus nxt) {
 
         lProperty.setValue(nxt);
-        Optional<Annotation> existingAnnotation = nxt.getAnnotations().stream().filter(a -> a.getUsername().equals(userProperty.get())).findAny();
+        Optional<Annotation> existingAnnotation = nxt.getAnnotations().stream().filter(a -> a.getUsername().equals(userBinding.get())).findAny();
         if (existingAnnotation.isPresent()) {
-            System.out.println("found an annotation for user: " + userProperty.get());
+            System.out.println("found an annotation for user: " + userBinding.get());
             Annotation a = existingAnnotation.get();
             aProperty.setValue(a);
             syncAnnotationControls(a);
         } else {
-            Annotation a = new Annotation(userProperty.get(), Status.undecided, "");
+            Annotation a = new Annotation(userBinding.get(), Status.undecided, "");
             aProperty.setValue(a);
             nxt.getAnnotations().add(a);
             syncAnnotationControls(a);
-            System.out.println("didn't find an annotation for user: " + userProperty.get() + ", created new annotation");
+            System.out.println("didn't find an annotation for user: " + userBinding.get() + ", created new annotation");
         }
         desc.setText(nxt.getGRange().toString());
-    }
-
-    /**
-     * @return the datasourceProperty
-     */
-    public StringProperty getDatasourceProperty() {
-        return datasourceProperty;
-    }
-
-    /**
-     * @return the userProperty
-     */
-    public StringProperty getUserProperty() {
-        return userProperty;
-    }
-
-    public List<Locus> getLoci() {
-        return loci;
     }
 }

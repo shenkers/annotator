@@ -9,6 +9,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 import java.util.List;
+import javafx.beans.property.Property;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -27,9 +28,7 @@ public class PersistenceService {
 
     Logger logger = LoggerFactory.getLogger(PersistenceService.class);
 
-    EntityManager 
-//            userEntityManager, sourceEntityManager, 
-            annotationEntityManager;
+    Property<EntityManager> emProperty;
 
 //    @Inject
 //    public void setEntityManagers(
@@ -42,30 +41,28 @@ public class PersistenceService {
 //        this.annotationEntityManager = annotationEntityManager;
 //    }
     
-     @Inject
-    public void setEntityManager(
-              EntityManager annotationEntityManager
-    ) {
-        logger.info("injecting entitymanager "+annotationEntityManager);
-         this.annotationEntityManager = annotationEntityManager;
+    @Inject
+    public void setPersistenceProperties(PersistenceProperties properties){
+        this.emProperty = properties.getEmProperty();
     }
     
     public void persist(Locus a) {
         logger.info("persist requested");
-        EntityTransaction transaction = annotationEntityManager.getTransaction();
+        EntityManager em = emProperty.getValue();
+        EntityTransaction transaction = em.getTransaction();
         logger.info("start transaction");
-        Locus find = annotationEntityManager.find(Locus.class, a.getId());
+        Locus find = em.find(Locus.class, a.getId());
         
         transaction.begin();
         // if the entity is not present, add it
         if(find==null){
             logger.info("didn't find entity, adding");
-        annotationEntityManager.persist(a);
+        em.persist(a);
         }
         // otherwise, update it
         else{
             logger.info("found entity, merging");
-            annotationEntityManager.merge(a);
+            em.merge(a);
         }
         transaction.commit();
     }
@@ -78,20 +75,22 @@ public class PersistenceService {
 //    }
     
     public List<Locus> queryLoci() {
-        CriteriaQuery<Locus> query = annotationEntityManager.getCriteriaBuilder().createQuery(Locus.class);
+        EntityManager em = emProperty.getValue();
+        CriteriaQuery<Locus> query = em.getCriteriaBuilder().createQuery(Locus.class);
         query.from(Locus.class);
-        List<Locus> resultList = annotationEntityManager.createQuery(query).getResultList();
+        List<Locus> resultList = em.createQuery(query).getResultList();
         return resultList;
     }
     
     public List<Locus> querySourceLoci(String source) {
-        CriteriaBuilder cb = annotationEntityManager.getCriteriaBuilder();
+        EntityManager em = emProperty.getValue();
+        CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Locus> query = cb.createQuery(Locus.class);
         
         Root<Locus> locus = query.from(Locus.class);
         query.where(cb.equal(locus.get(Locus_.id).get(LocusId_.source), source));
         
-        List<Locus> resultList = annotationEntityManager.createQuery(query).getResultList();
+        List<Locus> resultList = em.createQuery(query).getResultList();
         return resultList;
     }
 
