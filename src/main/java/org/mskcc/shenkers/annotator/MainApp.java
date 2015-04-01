@@ -65,7 +65,7 @@ public class MainApp extends Application {
             EntityManagerFactory emf = inj.getInstance(EntityManagerFactory.class);
             System.out.println("got instance: " + emf);
             emf.close();
-            System.out.println("closed");
+            System.out.println("factory is open? "+emf.isOpen());
         });
     }
 

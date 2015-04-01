@@ -19,7 +19,7 @@
     <HBox alignment="CENTER" >
         <VBox spacing="10"  alignment="CENTER_RIGHT">
             <HBox alignment="CENTER_RIGHT">
-                <Label text="STATUS: X/Y"/>
+                <Label fx:id="progress" text="STATUS: X/Y"/>
             </HBox>
             <HBox alignment="CENTER_RIGHT">
                 <Label text="Source:"/>

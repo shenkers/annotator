@@ -51,61 +51,101 @@ public class AnnotationNGTest {
      * Test of getPrimaryKey method, of class Annotation.
      */
 //    @Test
-    public void testGetPrimaryKey2() {
-        String annotations = "annotations2";
+//    public void testGetPrimaryKey2() {
+//        String annotations = "annotations2";
+//        EntityManager annotationEntityManager = Persistence.createEntityManagerFactory(annotations).createEntityManager();
+//
+//        GRange range = new GRange("X", 1, 2, false);
+//        Annotation a = new Annotation(new Locus(range, "source1"), "sol", Status.false_pos, "does it work?");
+//
+//        EntityTransaction transaction = annotationEntityManager.getTransaction();
+//        transaction.begin();
+////        annotationEntityManager.persist(a);
+//        annotationEntityManager.merge(a);
+//        transaction.commit();
+//
+////        new StandardServiceRegistryBuilder().applySetting(configuration.getProperties()).
+////       String annotations = "annotations";
+////         String userHomeDir = System.getProperty("user.home", ".");
+////        String systemDir = userHomeDir + "/annotator";
+//// 
+////        // Set the db system directory.
+////        System.setProperty("derby.system.home", systemDir);
+//////        EntityManager userEntityManager = Persistence.createEntityManagerFactory(users).createEntityManager();
+//////        EntityManager sourceEntityManager = Persistence.createEntityManagerFactory(sources).createEntityManager();
+////        EntityManager annotationEntityManager = Persistence.createEntityManagerFactory(annotations).createEntityManager();
+//    }
+//
+////     @Test
+//    public void testGetPrimaryKey() {
+//        String annotations = "annotations2";
+//        EntityManager annotationEntityManager = Persistence.createEntityManagerFactory(annotations).createEntityManager();
+//        GRange range = new GRange("X", 1, 2, false);
+//        Annotation a = new Annotation(new Locus(range, "source1"), "sol", Status.false_pos, "does it work?");
+//
+//        Annotation find = annotationEntityManager.find(Annotation.class, a.getUsername());
+//        EntityTransaction transaction = annotationEntityManager.getTransaction();
+//        transaction.begin();
+//        find.setNotes("changed notes");
+//        annotationEntityManager.persist(find);
+//        transaction.commit();
+////        new StandardServiceRegistryBuilder().applySetting(configuration.getProperties()).
+////       String annotations = "annotations";
+////         String userHomeDir = System.getProperty("user.home", ".");
+////        String systemDir = userHomeDir + "/annotator";
+//// 
+////        // Set the db system directory.
+////        System.setProperty("derby.system.home", systemDir);
+//////        EntityManager userEntityManager = Persistence.createEntityManagerFactory(users).createEntityManager();
+//////        EntityManager sourceEntityManager = Persistence.createEntityManagerFactory(sources).createEntityManager();
+////        EntityManager annotationEntityManager = Persistence.createEntityManagerFactory(annotations).createEntityManager();
+//
+//    }
+    @Test
+    public void testGetPrimaryKey3() {
+        String annotations = "loci";
         EntityManager annotationEntityManager = Persistence.createEntityManagerFactory(annotations).createEntityManager();
-        
-        GRange range = new GRange("X",1,2,false);
-        Annotation a = new Annotation(range, "source1","sol", Status.false_pos, "does it work?");
-        
+//3R:4895365-4897435
+        GRange range = new GRange("X", 3, 6, false);
+        Locus a = new Locus(range, "source1");
+        a.getAnnotations().add(new Annotation("sol", Status.false_pos, "a second locus"));
+
         EntityTransaction transaction = annotationEntityManager.getTransaction();
         transaction.begin();
-//        annotationEntityManager.persist(a);
-        annotationEntityManager.merge(a);
+        Locus find = annotationEntityManager.find(Locus.class, a.getId());
+        if (find == null) {
+            annotationEntityManager.persist(a);
+        }
+        else{
+            System.out.println("found entry");
+        }
+//        annotationEntityManager.merge(a);
         transaction.commit();
-        
-//        new StandardServiceRegistryBuilder().applySetting(configuration.getProperties()).
-//       String annotations = "annotations";
-//         String userHomeDir = System.getProperty("user.home", ".");
-//        String systemDir = userHomeDir + "/annotator";
-// 
-//        // Set the db system directory.
-//        System.setProperty("derby.system.home", systemDir);
-////        EntityManager userEntityManager = Persistence.createEntityManagerFactory(users).createEntityManager();
-////        EntityManager sourceEntityManager = Persistence.createEntityManagerFactory(sources).createEntityManager();
-//        EntityManager annotationEntityManager = Persistence.createEntityManagerFactory(annotations).createEntityManager();
-
     }
     
-//     @Test
-    public void testGetPrimaryKey() {
-        String annotations = "annotations2";
+    @Test
+    public void testGetPrimaryKey4() {
+        String annotations = "loci";
         EntityManager annotationEntityManager = Persistence.createEntityManagerFactory(annotations).createEntityManager();
-        AnnotationId id = new AnnotationId();
-        id.setUsername("sol");
-        id.setSource("abc");
-        id.setChr("X");
-        id.setS(2);
-        id.setE(2);
-        id.setNeg(false);
+//3R:4895365-4897435
+        int start = 4895365;
+        int end = 4897435;
         
-        Annotation find = annotationEntityManager.find(Annotation.class, id);
+        for(int i=0; i<=2000; i+= 200){
+        GRange range = new GRange("3R", start+i, end+i, false);
+        Locus a = new Locus(range, "source3");
+
         EntityTransaction transaction = annotationEntityManager.getTransaction();
         transaction.begin();
-        find.setNotes("changed notes");
-        annotationEntityManager.persist(find);
+        Locus find = annotationEntityManager.find(Locus.class, a.getId());
+        if (find == null) {
+            annotationEntityManager.persist(a);
+        }
+        else{
+            System.out.println("found entry");
+        }
+//        annotationEntityManager.merge(a);
         transaction.commit();
-//        new StandardServiceRegistryBuilder().applySetting(configuration.getProperties()).
-//       String annotations = "annotations";
-//         String userHomeDir = System.getProperty("user.home", ".");
-//        String systemDir = userHomeDir + "/annotator";
-// 
-//        // Set the db system directory.
-//        System.setProperty("derby.system.home", systemDir);
-////        EntityManager userEntityManager = Persistence.createEntityManagerFactory(users).createEntityManager();
-////        EntityManager sourceEntityManager = Persistence.createEntityManagerFactory(sources).createEntityManager();
-//        EntityManager annotationEntityManager = Persistence.createEntityManagerFactory(annotations).createEntityManager();
-
+        }
     }
-
 }

@@ -6,45 +6,40 @@
 package org.mskcc.shenkers.annotator;
 
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
+import javax.persistence.Embeddable;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 
 /**
  *
  * @author sol
  */
-@Entity
+@Embeddable
 public class Annotation {
 //    @Id
 //    @GeneratedValue(strategy = GenerationType.AUTO)
 //	private long id;
-    
-    
+
     private Status status;
     private String notes;
-    
-    @EmbeddedId
-            private AnnotationId id;
+    private String username;
 
     public Annotation() {
     }
 
-    public Annotation(GRange gRange, String source, String username, Status status, String notes) {
+    public Annotation(String username, Status status, String notes) {
         this.status = status;
         this.notes = notes;
-        this.id = new AnnotationId();
-        setGRange(gRange);
-        id.setSource(source);
-        id.setUsername(username);
+        this.username = username;
     }
-    
-    
-    
+
 //    @EmbeddedId
 //    public AnnotationId getPrimaryKey(){
 //        AnnotationId id = new AnnotationId();
@@ -56,7 +51,6 @@ public class Annotation {
 //        id.setNeg(neg);
 //        return id;
 //    }
-
     /**
      * @return the status
      */
@@ -86,28 +80,17 @@ public class Annotation {
     }
 
     /**
-     * @return the id
+     * @return the username
      */
-    public AnnotationId getId() {
-        return id;
+    public String getUsername() {
+        return username;
     }
 
     /**
-     * @param id the id to set
+     * @param username the username to set
      */
-    public void setId(AnnotationId id) {
-        this.id = id;
-    }
-    
-    public GRange getGRange(){
-        return new GRange(id.getChr(),id.getS(),id.getE(),id.isNeg());
-    }
-    
-    public void setGRange(GRange gRange){
-        id.setChr(gRange.getChr());
-        id.setS(gRange.getS());
-        id.setE(gRange.getE());
-        id.setNeg(gRange.isNeg());
-    }
+    public void setUsername(String username) {
+        this.username = username;
+    }   
 
 }

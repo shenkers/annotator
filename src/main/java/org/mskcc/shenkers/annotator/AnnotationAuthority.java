@@ -10,9 +10,6 @@ package org.mskcc.shenkers.annotator;
  * @author sol
  */
 public interface AnnotationAuthority {
-    public Annotation getNext();
     
-    public Annotation getPrev();
-    
-    void update(Annotation annotation);
+    void update(Locus annotation);
 }

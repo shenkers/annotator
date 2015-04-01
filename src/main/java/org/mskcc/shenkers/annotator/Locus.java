@@ -5,13 +5,18 @@
  */
 package org.mskcc.shenkers.annotator;
 
+import java.util.HashSet;
+import java.util.Set;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
+import javax.persistence.ElementCollection;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
 /**
@@ -23,6 +28,9 @@ public class Locus {
 
     @EmbeddedId
     private LocusId id;
+    
+    @ElementCollection
+    private Set<Annotation> annotations;
 
     public Locus() {
     }
@@ -31,6 +39,7 @@ public class Locus {
         this.id = new LocusId();
         setGRange(gRange);
         id.setSource(source);
+        annotations = new HashSet<>();
     }
 
     /**
@@ -56,6 +65,24 @@ public class Locus {
         id.setS(gRange.getS());
         id.setE(gRange.getE());
         id.setNeg(gRange.isNeg());
+    }
+    
+    public String getSource(){
+        return id.getSource();
+    }
+
+    /**
+     * @return the annotations
+     */
+    public Set<Annotation> getAnnotations() {
+        return annotations;
+    }
+
+    /**
+     * @param annotations the annotations to set
+     */
+    public void setAnnotations(Set<Annotation> annotations) {
+        this.annotations = annotations;
     }
 
 }

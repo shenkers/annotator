@@ -25,7 +25,7 @@ public class PersistenceModule extends AbstractModule {
     protected void configure() {
         String users = "users";
         String sources = "sources";
-        String annotations = "annotations";
+        String databaseName = "loci";
          String userHomeDir = System.getProperty("user.home", ".");
         String systemDir = userHomeDir + "/annotator";
  
@@ -33,12 +33,14 @@ public class PersistenceModule extends AbstractModule {
         System.setProperty("derby.system.home", systemDir);
 //        EntityManager userEntityManager = Persistence.createEntityManagerFactory(users).createEntityManager();
 //        EntityManager sourceEntityManager = Persistence.createEntityManagerFactory(sources).createEntityManager();
-         EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory(annotations);
+         EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory(databaseName);
         EntityManager annotationEntityManager = entityManagerFactory.createEntityManager();
+         System.out.println("constructed entitymanager "+annotationEntityManager);
 //        bind(EntityManager.class).annotatedWith(Names.named(users)).toInstance(userEntityManager);
 //        bind(EntityManager.class).annotatedWith(Names.named(sources)).toInstance(sourceEntityManager);
-        bind(EntityManager.class).annotatedWith(Names.named(annotations)).toInstance(annotationEntityManager);
+        bind(EntityManager.class).toInstance(annotationEntityManager);
         bind(EntityManagerFactory.class).toInstance(entityManagerFactory);
+        bind(AnnotationAuthority.class).to(PersistentAnnotationAuthorityImpl.class);
     }
     
     

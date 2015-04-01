@@ -5,7 +5,9 @@
  */
 package org.mskcc.shenkers.annotator;
 
+import com.google.inject.Guice;
 import com.google.inject.Inject;
+import com.google.inject.Injector;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -14,7 +16,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.Spliterators;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.Property;
@@ -42,15 +47,18 @@ public class DatasetSelecterController implements Initializable {
 
     Property<Optional<String>> user = new SimpleObjectProperty(Optional.empty());
     Property<Optional<String>> source = new SimpleObjectProperty(Optional.empty());
-    
+
     @Inject
-    PersitenceService persistenceService;
+    PersistenceService persistenceService;
 
     @FXML
-    Button addUser, selectSource, selectUser, annotate;
+    Button addUser, annotate;
+    
+    @FXML
+    Label selectSource, selectUser;
 
     @FXML
-    Label selectedUser, selectedSource;
+    TextField selectedUser, selectedSource;
 
     @FXML
     ListView<String> sources, users;
@@ -77,9 +85,13 @@ public class DatasetSelecterController implements Initializable {
     public void userSelected(ActionEvent e) {
         Optional.ofNullable(users.getSelectionModel().getSelectedItem())
                 .ifPresent((userName) -> {
-                    user.setValue(Optional.of(userName));
-                    selectedUser.setText(userName);
+                    userSelected(userName);
                 });
+    }
+
+    public void userSelected(String userName) {
+        user.setValue(Optional.of(userName));
+        selectedUser.setText(userName);
     }
 
     @FXML
@@ -90,18 +102,26 @@ public class DatasetSelecterController implements Initializable {
                     selectedSource.setText(sourceName);
                 });
     }
+    
+    public void sourceSelected(String sourceName) {
+        source.setValue(Optional.of(sourceName));
+        selectedSource.setText(sourceName);
+    }
 
     @FXML
     public void startAnnotation(ActionEvent e) throws IOException {
         System.out.println("starting annotation");
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/Scene.fxml"));
-
+      
         Parent root = fxmlLoader.load();
         FXMLController controller = fxmlLoader.<FXMLController>getController();
 
         controller.getUserProperty().setValue(user.getValue().get());
         controller.getDatasourceProperty().setValue(source.getValue().get());
+        controller.getLoci().addAll(persistenceService.querySourceLoci(source.getValue().get()));
+        controller.setAnnotationAuthority(persistenceService);
+        controller.initializeGui();
 
         Scene scene = new Scene(root);
         scene.getStylesheets().add("/styles/Styles.css");
@@ -109,6 +129,8 @@ public class DatasetSelecterController implements Initializable {
         Stage stage = new Stage();
         stage.setTitle("Annotator");
         stage.setScene(scene);
+        // save the current state when the editor is closed
+        stage.setOnCloseRequest(evt -> {controller.persistCurrentState();});
         stage.show();
     }
 
@@ -122,22 +144,35 @@ public class DatasetSelecterController implements Initializable {
         canAnnotate = Bindings.createBooleanBinding(() -> {
             return !(user.getValue().isPresent() && source.getValue().isPresent());
         }, user, source);
-      
+
         annotate.disableProperty().bind(canAnnotate);
+
+        users.getSelectionModel().selectedItemProperty().addListener(
+                (ob, o, userName) -> {
+                    userSelected(userName);
+                });
         
+        sources.getSelectionModel().selectedItemProperty().addListener(
+                (ob, o, sourceName) -> {
+                    sourceSelected(sourceName);
+                });
         // read annotations from the database
-        List<Annotation> annotations = persistenceService.queryAnnotations();
-        
+        List<Locus> annotations = persistenceService.queryLoci();
+
         Set<String> userSet = annotations
                 .stream()
-                .map(a -> a.getId().getUsername())
+                .flatMap(l
+                        -> StreamSupport.stream(
+                                Spliterators.spliterator(
+                                        l.getAnnotations(), 0), false))
+                .map(a -> a.getUsername())
                 .collect(Collectors.toSet());
-        
+
         Set<String> sourceSet = annotations
                 .stream()
-                .map(a -> a.getId().getSource())
+                .map(a -> a.getSource())
                 .collect(Collectors.toSet());
-        
+
         // set the gui based on these
         this.users.getItems().setAll(userSet);
         this.sources.getItems().setAll(sourceSet);

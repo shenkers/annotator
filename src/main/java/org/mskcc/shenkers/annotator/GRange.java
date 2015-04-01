@@ -18,7 +18,7 @@ import javax.persistence.IdClass;
 public class GRange {
 
 
-    private String ref;
+    private String chr;
     private int s;
     private int e;
     private boolean neg;
@@ -27,7 +27,7 @@ public class GRange {
     }
 
     public GRange(String ref, int s, int e, boolean neg) {
-        this.ref = ref;
+        this.chr = ref;
         this.s = s;
         this.e = e;
         this.neg = neg;
@@ -37,14 +37,14 @@ public class GRange {
      * @return the ref
      */
     public String getChr() {
-        return ref;
+        return chr;
     }
 
     /**
      * @param ref the ref to set
      */
     public void setChr(String ref) {
-        this.ref = ref;
+        this.chr = ref;
     }
 
     /**
@@ -108,4 +108,11 @@ public class GRange {
         GRange other = (GRange) obj;
         return other.getChr().equals(getChr()) && other.getS() == getS() && other.getE() == getE() && other.isNeg() == isNeg();
     }
+
+    @Override
+    public String toString() {
+       return String.format("%s:%d-%d:%c",chr,s,e,neg?'-':'+');
+    }
+    
+    
 }
